@@ -5,7 +5,7 @@ TEXT_SRC=""
 
 help_msg() {
     cat <<EOF
-transsh - POSIX script shell helper for moetranslate2
+transsh - POSIX script shell helper for moetranslate
 
 Usage: transsh [OPT]
        -c  --clipboard    - Load text from the clipboard
@@ -40,33 +40,27 @@ translate() {
 	if [ -n "$2" ]
 	then
 		[ "$2" != "--intr" ] && exit 1
-		moetranslate2 -if "auto:${LANG_TARGET}" "$TEXT_SRC"
+		moetranslate -id "auto:$LANG_TARGET" "$TEXT_SRC"
 		return
 	fi
 
-	moetranslate2 -f "auto:${LANG_TARGET}" "$TEXT_SRC" | less -R
+	moetranslate -d "auto:$LANG_TARGET" "$TEXT_SRC" | less +g -R
 }
 
 speak() {
 	input_text
 
-	S_LANG_TARGET=$(moetranslate2 -d "$TEXT_SRC")
+	S_LANG_TARGET=$(moetranslate -l "$TEXT_SRC")
 	S_LANG_TARGET=${S_LANG_TARGET%% *}
+	OUT_FILE="/tmp/trans_speak"
 
 	[ -z "$S_LANG_TARGET" ] && exit 1
 
-	URL="http://translate.google.com/translate_tts?"`
-	    `"ie=UTF-8&tl=$S_LANG_TARGET&q=$TEXT_SRC&client=tw-ob"
 
-	USERAGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5)"`
-		  `"AppleWebKit/537.31 (KHTML, like Gecko) "`
-		  `"Chrome/26.0.1410.65 Safari/537.31"
+	URL="http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=$S_LANG_TARGET"
+	curl -s --get --data-urlencode "q=$TEXT_SRC" "$URL" --output "$OUT_FILE"
 
-	TEMP="/tmp/trans_speak"
-
-	wget -q -U "$USERAGENT" "$URL" -O "$TEMP"
-
-	mpv "$TEMP" 1>/dev/null
+	mpv "$OUT_FILE" 1>/dev/null
 }
 
 case "$1" in
