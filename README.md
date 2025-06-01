@@ -4,5 +4,5 @@ POSIX script shell helper for [moetranslate](https://github.com/rlapz/moetransla
 ### Required packages:
 * curl
 * moetranslate
-* mpv
+* mpv / ffplay (ffmpeg)
 * xsel

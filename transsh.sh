@@ -60,7 +60,12 @@ speak() {
 	URL="http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=$S_LANG_TARGET"
 	curl -s --get --data-urlencode "q=$TEXT_SRC" "$URL" --output "$OUT_FILE"
 
-	mpv "$OUT_FILE" 1>/dev/null
+	if command -v ffplay
+	then
+	       ffplay -autoexit -hide_banner -vn -nodisp "$OUT_FILE"
+	else
+	       mpv "$OUT_FILE"
+	fi
 }
 
 case "$1" in
